@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning Strategies - Sorting Activity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .story-box {
+            background: linear-gradient(135deg, #f6f8fb 0%, #e9ecf5 100%);
+            border-right: 5px solid #667eea;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .story-box p {
+            margin-bottom: 15px;
+        }
+
+        .story-box strong {
+            color: #667eea;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .blocks-pool {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px dashed #ccc;
+        }
+
+        .blocks-pool h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .drop-zones {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .drop-zones h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .strategy-block {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: move;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .strategy-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .strategy-block.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .step-block {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100px;
+        }
+
+        .step-icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .step-detail {
+            font-size: 0.75em;
+            opacity: 0.9;
+            font-weight: normal;
+            line-height: 1.3;
+        }
+
+        /* Color styles for each step type */
+        .step-try {
+            background: #3498db;
+        }
+
+        .step-got-it {
+            background: #2ecc71;
+        }
+
+        .step-ask-ai {
+            background: #9b59b6;
+        }
+
+        .step-strengthen-ai {
+            background: #6c3483;
+        }
+
+        .step-try-again {
+            background: #17a2b8;
+        }
+
+        .step-submit {
+            background: #f39c12;
+        }
+
+        .step-share {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .step-give-up {
+            background: #7f8c8d;
+        }
+        
+        .drop-zone {
+            background: white;
+            border: 3px dashed #ccc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone.drag-over {
+            background: #e3f2fd;
+            border-color: #667eea;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #2ecc71;
+        }
+
+        .zone-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .zone-label {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .zone-content {
+            flex: 1;
+        }
+
+        .reset-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 אסטרטגיות למידה עם AI</h1>
+        </div>
+
+        <div class="story-box">
+            <p>רייצ'ל קיבלה משימת חקר מהמורה :<strong> עליך לגלות את התשובות לשאלות - באמצעות ניסוי וטעייה:</strong></p>
+            <p style="text-align: center; font-style: italic; font-size: 1.15em; margin: 20px 0;">
+                <strong style="font-size: 0.84em">המורה אמר: </strong>"ערכו ניסיונות באופן עצמאי, עד שתגלו כיצד הדברים עובדים, ולבסוף, ענו על השאלות והגישו"
+            </p>
+            <p><strong></strong></p>
+            <ul style="margin-right: 30px; margin-top: 10px; text-align: center; font-size: 1.02em;" >
+                <div>אוף! לא יודעת מה לעשות  🤔   
+                רגע! יש לי רעיון💡</div>
+                <div> פשוט אבקש את התשובות מה- AI 😆</div>
+                <div>אבל אז, לא אבין באמת את החומר 😔</div>
+            </ul>
+            <p style="margin-top: 25px; text-align: center; font-size: 1.0em;">עזרו לרייצ'ל לגלות:
+                <strong style="font-size: 1.1em"> מהי האסטרטגיה הטובה ביותר למשימה מסוג זה?</strong>
+            </p>
+        </div>
+
+        <div class="instructions">
+            ⬇️ לפניכם, שמונה אסטרטגיות שונות: סדרו אותן מהטובה ביותר לגרועה ביותר - לפי שיקול דעתכם. ⬇️
+        </div>
+
+        <div class="game-area">
+            <div class="blocks-pool">
+                <h2>🎯 סדר/י מהטוב ביותר לגרוע ביותר</h2>
+                <div id="blocksPool">
+                    <!-- Strategy 1: Try → Got It → Submit -->
+                    <div class="strategy-block" draggable="true" data-id="1">
+                        <div class="step-block step-try">
+                            <div class="step-icon">🔬</div>
+                            <div class="step-title">ניסוי וטעייה</div>
+                            <div class="step-detail">לא אוותר! אמשיך לנסות עד שאבין</div>
+                        </div>
+                        <div class="step-block step-got-it">
+                            <div class="step-icon">✓</div>
+                            <div class="step-title">הבנתי</div>
+                            <div class="step-detail">הבנתי את הקונספט לבד</div>
+                        </div>
+                        <div class="step-block step-submit">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">הגשה</div>
+                            <div class="step-detail">הבנתי! אגיש את התשובה</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 2: Try → Got It → Strengthen with AI → Submit -->
+                    <div class="strategy-block" draggable="true" data-id="2">
+                        <div class="step-block step-try">
+                            <div class="step-icon">🔬</div>
+                            <div class="step-title">ניסוי וטעייה</div>
+                            <div class="step-detail">לא אוותר! אמשיך לנסות עד שאבין</div>
+                        </div>
+                        <div class="step-block step-got-it">
+                            <div class="step-icon">✓</div>
+                            <div class="step-title">הבנתי</div>
+                            <div class="step-detail">הבנתי את הקונספט לבד</div>
+                        </div>
+                        <div class="step-block step-strengthen-ai">
+                            <div class="step-icon">🤖</div>
+                            <div class="step-title">חיזוק מה-AI</div>
+                            <div class="step-detail">הבנתי. אפנה ל-AI לקבל חיזוק</div>
+                        </div>
+                        <div class="step-block step-submit">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">הגשה</div>
+                            <div class="step-detail">הבנתי! אגיש את התשובה</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 3: Try → Ask AI → Try Again → Submit -->
+                    <div class="strategy-block" draggable="true" data-id="3">
+                        <div class="step-block step-try">
+                            <div class="step-icon">🔬</div>
+                            <div class="step-title">ניסוי וטעייה</div>
+                            <div class="step-detail">לא אוותר! אמשיך לנסות עד שאבין</div>
+                        </div>
+                        <div class="step-block step-ask-ai">
+                            <div class="step-icon">🤖</div>
+                            <div class="step-title">פניה ל-AI</div>
+                            <div class="step-detail">לא הבנתי. אשאל את ה-AI</div>
+                        </div>
+                        <div class="step-block step-try-again">
+                            <div class="step-icon">🔄</div>
+                            <div class="step-title">ניסוי שוב</div>
+                            <div class="step-detail">אנסה עכשיו שוב בעצמי</div>
+                        </div>
+                        <div class="step-block step-submit">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">הגשה</div>
+                            <div class="step-detail">הבנתי! אגיש את התשובה</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 4: Try → Ask AI → Submit -->
+                    <div class="strategy-block" draggable="true" data-id="4">
+                        <div class="step-block step-try">
+                            <div class="step-icon">🔬</div>
+                            <div class="step-title">ניסוי וטעייה</div>
+                            <div class="step-detail">לא אוותר! אמשיך לנסות עד שאבין</div>
+                        </div>
+                        <div class="step-block step-ask-ai">
+                            <div class="step-icon">🤖</div>
+                            <div class="step-title">פניה ל-AI</div>
+                            <div class="step-detail">לא הבנתי. אשאל את ה-AI</div>
+                        </div>
+                        <div class="step-block step-submit">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">הגשה</div>
+                            <div class="step-detail">הבנתי! אגיש את התשובה</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 5: Ask AI → Try Again → Submit -->
+                    <div class="strategy-block" draggable="true" data-id="5">
+                        <div class="step-block step-ask-ai">
+                            <div class="step-icon">🤖</div>
+                            <div class="step-title">פניה ל-AI</div>
+                            <div class="step-detail">לא הבנתי. אשאל את ה-AI</div>
+                        </div>
+                        <div class="step-block step-try-again">
+                            <div class="step-icon">🔄</div>
+                            <div class="step-title">ניסוי שוב</div>
+                            <div class="step-detail">אנסה עכשיו שוב בעצמי</div>
+                        </div>
+                        <div class="step-block step-submit">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">הגשה</div>
+                            <div class="step-detail">הבנתי! אגיש את התשובה</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 6: Ask AI → Submit -->
+                    <div class="strategy-block" draggable="true" data-id="6">
+                        <div class="step-block step-ask-ai">
+                            <div class="step-icon">🤖</div>
+                            <div class="step-title">פניה ל-AI</div>
+                            <div class="step-detail">לא הבנתי. אשאל את ה-AI</div>
+                        </div>
+                        <div class="step-block step-submit">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">הגשה</div>
+                            <div class="step-detail">הבנתי! אגיש את התשובה</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 7: Try → Share Struggle -->
+                    <div class="strategy-block" draggable="true" data-id="7">
+                        <div class="step-block step-try">
+                            <div class="step-icon">🔬</div>
+                            <div class="step-title">ניסוי וטעייה</div>
+                            <div class="step-detail">לא אוותר! אמשיך לנסות עד שאבין</div>
+                        </div>
+                        <div class="step-block step-share">
+                            <div class="step-icon">💬</div>
+                            <div class="step-title">ויתור ושיתוף</div>
+                            <div class="step-detail">אשתף שניסיתי ולא הבנתי</div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 8: Give Up (no trying) -->
+                    <div class="strategy-block" draggable="true" data-id="8">
+                        <div class="step-block step-give-up">
+                            <div class="step-icon">🛑</div>
+                            <div class="step-title">ויתור</div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drop-zones">
+                <h2>📦 גררו את האסטרטגיות לכאן</h2>
+                <div id="dropZones">
+                    <div class="drop-zone" data-rank="1">
+                        <div class="zone-number">1</div>
+                        <div class="zone-content">
+                            <div class="zone-label">האסטרטגיה הטובה ביותר</div>
+                        </div>
+                    </div>
+                    <div class="drop-zone" data-rank="2">
+                        <div class="zone-number">2</div>
+                        <div class="zone-content"></div>
+                    </div>
+                    <div class="drop-zone" data-rank="3">
+                        <div class="zone-number">3</div>
+                        <div class="zone-content"></div>
+                    </div>
+                    <div class="drop-zone" data-rank="4">
+                        <div class="zone-number">4</div>
+                        <div class="zone-content"></div>
+                    </div>
+                    <div class="drop-zone" data-rank="5">
+                        <div class="zone-number">5</div>
+                        <div class="zone-content"></div>
+                    </div>
+                    <div class="drop-zone" data-rank="6">
+                        <div class="zone-number">6</div>
+                        <div class="zone-content"></div>
+                    </div>
+                    <div class="drop-zone" data-rank="7">
+                        <div class="zone-number">7</div>
+                        <div class="zone-content"></div>
+                    </div>
+                    <div class="drop-zone" data-rank="8">
+                        <div class="zone-number">8</div>
+                        <div class="zone-content">
+                            <div class="zone-label">האסטרטגיה הגרועה ביותר</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="reset-button" onclick="resetGame()">🔄 אפס את הסידור</button>
+        <button class="reset-button" style="background: #27ae60;" onclick="saveOrder()">💾 שמור את הסידור שלי</button>        
+    </div>
+
+    <script>
+        let draggedElement = null;
+        let scrollInterval = null;
+        const SCROLL_SPEED = 10;
+        const SCROLL_ZONE = 100;
+
+        // Randomize blocks on page load
+        function shuffleBlocks() {
+            const pool = document.getElementById('blocksPool');
+            const blocks = Array.from(pool.querySelectorAll('.strategy-block'));
+            
+            // Fisher-Yates shuffle
+            for (let i = blocks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+            }
+            
+            // Clear pool and add shuffled blocks
+            pool.innerHTML = '';
+            blocks.forEach(block => pool.appendChild(block));
+        }
+
+        // Call shuffle on page load
+        window.addEventListener('DOMContentLoaded', shuffleBlocks);
+
+        // Add drag event listeners to all strategy blocks
+        document.querySelectorAll('.strategy-block').forEach(block => {
+            block.addEventListener('dragstart', handleDragStart);
+            block.addEventListener('dragend', handleDragEnd);
+        });
+
+        // Add drop event listeners to all drop zones and blocks pool
+        document.querySelectorAll('.drop-zone, #blocksPool').forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('drop', handleDrop);
+            zone.addEventListener('dragleave', handleDragLeave);
+        });
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            // Stop auto-scrolling when drag ends
+            if (scrollInterval) {
+                clearInterval(scrollInterval);
+                scrollInterval = null;
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            if (this.classList.contains('drop-zone')) {
+                this.classList.add('drag-over');
+            }
+            
+            // Auto-scroll when dragging near top or bottom
+            const mouseY = e.clientY;
+            const windowHeight = window.innerHeight;
+            
+            // Clear existing scroll interval
+            if (scrollInterval) {
+                clearInterval(scrollInterval);
+                scrollInterval = null;
+            }
+            
+            // Scroll up if near top
+            if (mouseY < SCROLL_ZONE) {
+                scrollInterval = setInterval(() => {
+                    window.scrollBy(0, -SCROLL_SPEED);
+                }, 16);
+            }
+            // Scroll down if near bottom
+            else if (mouseY > windowHeight - SCROLL_ZONE) {
+                scrollInterval = setInterval(() => {
+                    window.scrollBy(0, SCROLL_SPEED);
+                }, 16);
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (this.classList.contains('drop-zone')) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            if (this.classList.contains('drop-zone')) {
+                this.classList.remove('drag-over');
+                
+                // If zone already has a block, move it back to pool
+                const existingBlock = this.querySelector('.strategy-block');
+                if (existingBlock) {
+                    document.getElementById('blocksPool').appendChild(existingBlock);
+                }
+                
+                // Add the dragged block to this zone
+                const zoneContent = this.querySelector('.zone-content');
+                zoneContent.innerHTML = '';
+                zoneContent.appendChild(draggedElement);
+                
+                this.classList.add('filled');
+            } else if (this.id === 'blocksPool') {
+                // Moving back to pool
+                this.appendChild(draggedElement);
+                
+                // Remove filled class from any zone that lost this block
+                document.querySelectorAll('.drop-zone').forEach(zone => {
+                    if (!zone.querySelector('.strategy-block')) {
+                        zone.classList.remove('filled');
+                    }
+                });
+            }
+        }
+
+        function resetGame() {
+            const pool = document.getElementById('blocksPool');
+            document.querySelectorAll('.strategy-block').forEach(block => {
+                pool.appendChild(block);
+            });
+            
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('filled');
+            });
+            
+            // Shuffle again on reset
+            shuffleBlocks();
+        }
+
+        function saveOrder() {
+            // Use html2canvas library to capture the drop zones as an image
+            const dropZonesElement = document.querySelector('.drop-zones');
+            
+            // Load html2canvas from CDN if not already loaded
+            if (typeof html2canvas === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = function() {
+                    captureAndDownload(dropZonesElement);
+                };
+                document.head.appendChild(script);
+            } else {
+                captureAndDownload(dropZonesElement);
+            }
+        }
+
+        function captureAndDownload(element) {
+            html2canvas(element, {
+                backgroundColor: '#f8f9fa',
+                scale: 2  // Higher quality
+            }).then(canvas => {
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'הסידור_שלי.png';
+                    link.click();
+                });
+            });
+        }       
+    </script>
+</body>
+</html>
