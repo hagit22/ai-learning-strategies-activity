@@ -258,6 +258,24 @@
             background: #c0392b;
             transform: scale(1.05);
         }
+
+        .copyright {
+            position: absolute;
+            top: 15px;
+            left: 40px;
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 12px;
+            border-radius: 15px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            opacity: 1;
+            pointer-events: none;
+        }
+        
     </style>
 </head>
 <body>
@@ -481,6 +499,7 @@
         <button class="reset-button" onclick="resetGame()">🔄 אפס את הסידור</button>
         <button class="reset-button" style="background: #27ae60;" onclick="saveOrder()">💾 שמור את הסידור שלי</button>        
     </div>
+    <div class="copyright">© חגית ידוב 2025</div>
 
     <script>
         let draggedElement = null;
